@@ -36,6 +36,8 @@ export default ({ mode }) => {
     // 路径别名
     resolve: {
       alias: {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         '@': fileURLToPath(new URL('./src', import.meta.url)),
         '@views': resolvePath('src/views'),
         '@imgs': resolvePath('src/assets/img'),
