@@ -86,7 +86,7 @@ export default ({ mode }) => {
         dts: 'src/types/auto-imports.d.ts',
         eslintrc: {
           // 这里先设置成true然后pnpm dev 运行之后会生成 .auto-import.json 文件之后，在改为false
-          enabled: true,
+          enabled: false,
           filepath: './.auto-import.json',
           globalsPropValue: true
         }
