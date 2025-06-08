@@ -42,43 +42,78 @@ export function useChart(options: UseChartOptions = {}) {
   let intersectionObserver: IntersectionObserver | null = null
   let pendingOptions: EChartsOption | null = null
   let resizeTimeoutId: number | null = null
+  let resizeFrameId: number | null = null
   let isDestroyed = false
 
-  // 防抖的resize处理
+  // 使用 requestAnimationFrame 优化 resize 处理
+  const requestAnimationResize = () => {
+    if (resizeFrameId) {
+      cancelAnimationFrame(resizeFrameId)
+    }
+    resizeFrameId = requestAnimationFrame(() => {
+      handleResize()
+      resizeFrameId = null
+    })
+  }
+
+  // 防抖的resize处理（用于窗口resize事件）
   const debouncedResize = () => {
     if (resizeTimeoutId) {
       clearTimeout(resizeTimeoutId)
     }
     resizeTimeoutId = window.setTimeout(() => {
-      handleResize()
+      requestAnimationResize()
       resizeTimeoutId = null
     }, 100)
   }
 
   // 收缩菜单时，重新计算图表大小
   watch(menuOpen, () => {
-    // 使用防抖优化多次resize调用
+    // 立即调用一次，快速响应
     nextTick(() => {
-      debouncedResize()
+      requestAnimationResize()
+    })
+
+    // 使用更短的延迟时间，确保图表正确适应宽度变化
+    const delays = [50, 100, 200, 350]
+    delays.forEach((delay) => {
+      setTimeout(() => {
+        requestAnimationResize()
+      }, delay)
     })
   })
 
   // 菜单类型变化触发
   watch(menuType, () => {
+    // 立即调用一次，快速响应
     nextTick(() => {
-      debouncedResize()
+      requestAnimationResize()
     })
+
+    // 菜单类型变化也使用多延迟处理
+    setTimeout(() => {
+      const delays = [50, 100, 200]
+      delays.forEach((delay) => {
+        setTimeout(() => {
+          requestAnimationResize()
+        }, delay)
+      })
+    }, 0)
   })
 
   // 主题变化时重新设置图表选项
   if (autoTheme) {
     watch(isDark, () => {
       if (chart && !isDestroyed) {
-        // 重新应用当前选项以更新主题相关样式
-        const currentOptions = chart.getOption()
-        if (currentOptions) {
-          updateChart(currentOptions as EChartsOption)
-        }
+        // 使用 requestAnimationFrame 优化主题更新
+        requestAnimationFrame(() => {
+          if (chart && !isDestroyed) {
+            const currentOptions = chart.getOption()
+            if (currentOptions) {
+              updateChart(currentOptions as EChartsOption)
+            }
+          }
+        })
       }
     })
   }
@@ -122,19 +157,24 @@ export function useChart(options: UseChartOptions = {}) {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && pendingOptions && !isDestroyed) {
-            try {
-              // 元素变为可见，初始化图表
-              if (!chart) {
-                chart = echarts.init(entry.target as HTMLElement)
-              }
-              chart.setOption(pendingOptions)
-              pendingOptions = null
+            // 使用 requestAnimationFrame 确保在下一帧初始化图表
+            requestAnimationFrame(() => {
+              if (!isDestroyed && pendingOptions) {
+                try {
+                  // 元素变为可见，初始化图表
+                  if (!chart) {
+                    chart = echarts.init(entry.target as HTMLElement)
+                  }
+                  chart.setOption(pendingOptions)
+                  pendingOptions = null
 
-              // 清理观察器
-              cleanupIntersectionObserver()
-            } catch (error) {
-              console.error('图表初始化失败:', error)
-            }
+                  // 清理观察器
+                  cleanupIntersectionObserver()
+                } catch (error) {
+                  console.error('图表初始化失败:', error)
+                }
+              }
+            })
           }
         })
       },
@@ -238,6 +278,11 @@ export function useChart(options: UseChartOptions = {}) {
     if (resizeTimeoutId) {
       clearTimeout(resizeTimeoutId)
       resizeTimeoutId = null
+    }
+
+    if (resizeFrameId) {
+      cancelAnimationFrame(resizeFrameId)
+      resizeFrameId = null
     }
 
     pendingOptions = null
