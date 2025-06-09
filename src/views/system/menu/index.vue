@@ -20,7 +20,7 @@
         >
           <template #left>
             <!-- 按钮权限：后端控制模式，使用自定义指令 -->
-            <ElButton v-auth="'add'" @click="showModel('menu', null, true)" v-ripple>
+            <ElButton v-auth="'menu/add'" @click="showModel('menu', null, true)" v-ripple>
               添加菜单
             </ElButton>
             <ElButton @click="toggleExpand" v-ripple>
@@ -265,11 +265,11 @@
     if (row.children && row.children.length > 0) {
       return '目录'
     } else if (row.meta?.link && row.meta?.isIframe) {
-      return '内嵌'
-    } else if (row.path) {
+      return '菜单（内嵌）'
+    } else if (row.path && !row.meta?.link) {
       return '菜单'
     } else if (row.meta?.link) {
-      return '外链'
+      return '菜单（外链）'
     }
   }
 
@@ -304,7 +304,7 @@
         return h(
           'div',
           {},
-          row.meta.authList?.map((item: { title: string; auth_mark: string }, index: number) => {
+          row.meta.authList?.map((item: { title: string; authMark: string }, index: number) => {
             return h(
               ElPopover,
               {
@@ -363,17 +363,17 @@
       width: 180,
       formatter: (row: AppRouteRecord) => {
         return h('div', [
-          hasAuth('B_CODE1') &&
+          hasAuth('menu/add') &&
             h(ArtButtonTable, {
               type: 'add',
               onClick: () => showModel('menu')
             }),
-          hasAuth('B_CODE2') &&
+          hasAuth('menu/update') &&
             h(ArtButtonTable, {
               type: 'edit',
               onClick: () => showDialog('edit', row)
             }),
-          hasAuth('B_CODE3') &&
+          hasAuth('menu/del') &&
             h(ArtButtonTable, {
               type: 'delete',
               onClick: () => deleteMenu()
@@ -553,7 +553,7 @@
         } else {
           // 权限按钮数据回显
           form.authName = row.title
-          form.authLabel = row.auth_mark
+          form.authLabel = row.authMark
           form.authIcon = row.icon || ''
           form.authSort = row.sort || 1
         }
