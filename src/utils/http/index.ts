@@ -33,14 +33,12 @@ const axiosInstance = axios.create({
 // 请求拦截器
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
-    const { accessToken } = useUserStore()
+    const { saTokenInfo } = useUserStore()
 
     // 如果 token 存在，则设置请求头
-    if (accessToken) {
-      request.headers.set({
-        'Content-Type': 'application/json',
-        Authorization: accessToken
-      })
+    if (saTokenInfo?.tokenValue) {
+      request.headers['Content-Type'] = 'application/json'
+      request.headers[`${saTokenInfo.tokenName}`] = saTokenInfo.tokenValue
     }
 
     return request // 返回修改后的配置

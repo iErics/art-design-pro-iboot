@@ -5,7 +5,7 @@ import { useUserStore } from '@/store/modules/user'
 import { useMenuStore } from '@/store/modules/menu'
 import { setWorktab } from '@/utils/navigation'
 import { setPageTitle, setSystemTheme } from '../utils/utils'
-import { menuService } from '@/api/menuApi'
+import { MenuService } from '@/api/menuApi'
 import { registerDynamicRoutes } from '../utils/registerRoutes'
 import { AppRouteRecord } from '@/types/router'
 import { RoutesAlias } from '../routesAlias'
@@ -167,7 +167,7 @@ async function processFrontendMenu(router: Router): Promise<void> {
  */
 async function processBackendMenu(router: Router): Promise<void> {
   const closeLoading = loadingService.showLoading()
-  const { menuList } = await menuService.getMenuList()
+  const { menuList } = await MenuService.getMenuList()
   await registerAndStoreMenu(router, menuList, closeLoading)
 }
 

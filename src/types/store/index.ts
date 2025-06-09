@@ -5,6 +5,21 @@
 import { MenuThemeEnum, SystemThemeEnum } from '@/enums/appEnum'
 import { LocationQueryRaw } from 'vue-router'
 
+// 用户 saToken 信息
+export interface SaTokenInfo {
+  loginId: string // 此 token 对应的 LoginId，未登录时为 null，后端给的是 userId 返回
+  isLogin: boolean // 此 token 是否已经登录
+  tokenName: string // token 名称
+  tokenValue: string // token 值
+  loginType: string // 多账号体系下的账号类型
+  tokenTimeout: string // token 剩余有效期（单位: 秒）
+  sessionTimeout: string // Account-Session 剩余有效时间（单位: 秒）
+  tokenSessionTimeout: string // Token-Session 剩余有效时间（单位: 秒）
+  tokenActiveTimeout: string // token 距离被冻结还剩多少时间（单位: 秒
+  loginDeviceType: string // 登录设备类型
+  tag: string //自定义数据（暂无意义，留作扩展）
+}
+
 // 用户信息
 export interface UserInfo {
   userId: number

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { LanguageEnum } from '@/enums/appEnum'
 import { router } from '@/router'
-import { UserInfo } from '@/types/store'
+import { SaTokenInfo, UserInfo } from '@/types/store'
 import { useSettingStore } from './setting'
 import { useWorktabStore } from './worktab'
 import { AppRouteRecord } from '@/types/router'
@@ -20,8 +20,7 @@ export const useUserStore = defineStore(
     const lockPassword = ref('')
     const info = ref<Partial<UserInfo>>({})
     const searchHistory = ref<AppRouteRecord[]>([])
-    const accessToken = ref('')
-    const refreshToken = ref('')
+    const saTokenInfo = ref<Partial<SaTokenInfo>>({})
 
     const getUserInfo = computed(() => info.value)
     const getSettingState = computed(() => useSettingStore().$state)
@@ -52,20 +51,16 @@ export const useUserStore = defineStore(
       lockPassword.value = password
     }
 
-    const setToken = (newAccessToken: string, newRefreshToken?: string) => {
-      accessToken.value = newAccessToken
-      if (newRefreshToken) {
-        refreshToken.value = newRefreshToken
-      }
+    const setSaTokenInfo = (newInfo: SaTokenInfo) => {
+      saTokenInfo.value = newInfo
     }
 
     const logOut = () => {
+      saTokenInfo.value = {}
       info.value = {}
       isLogin.value = false
       isLock.value = false
       lockPassword.value = ''
-      accessToken.value = ''
-      refreshToken.value = ''
       useWorktabStore().opened = []
       sessionStorage.removeItem('iframeRoutes')
       resetRouterState(router)
@@ -79,8 +74,7 @@ export const useUserStore = defineStore(
       lockPassword,
       info,
       searchHistory,
-      accessToken,
-      refreshToken,
+      saTokenInfo,
       getUserInfo,
       getSettingState,
       getWorktabState,
@@ -90,7 +84,7 @@ export const useUserStore = defineStore(
       setSearchHistory,
       setLockStatus,
       setLockPassword,
-      setToken,
+      setSaTokenInfo,
       logOut
     }
   },

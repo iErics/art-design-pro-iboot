@@ -33,7 +33,7 @@
   let mode = ref('default')
   const userStore = useUserStore()
   // token
-  let { accessToken } = userStore
+  let { saTokenInfo } = userStore
   // 图片上传地址
   let server = `${import.meta.env.VITE_API_URL}/api/common/upload/wangeditor`
 
@@ -61,7 +61,9 @@
         // 注意 ${import.meta.env.VITE_BASE_URL} 写你自己的后端服务地址
         server,
         // 传递token
-        headers: { Authorization: accessToken },
+        headers: {
+          [saTokenInfo.tokenName as string]: saTokenInfo.tokenValue
+        },
         // 单个文件上传成功之后
         onSuccess() {
           ElMessage.success(`图片上传成功 ${EmojiText[200]}`)
