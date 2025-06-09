@@ -55,7 +55,7 @@
                 autocomplete="off"
               />
             </ElFormItem>
-            <div class="drag-verify">
+            <div v-show="enableClickPass" class="drag-verify">
               <div class="drag-verify-content" :class="{ error: !isPassing && isClickPass }">
                 <ArtDragVerify
                   ref="dragVerify"
@@ -75,9 +75,9 @@
             </div>
 
             <div class="forget-password">
-              <ElCheckbox v-model="formData.rememberPassword">{{
-                $t('login.rememberPwd')
-              }}</ElCheckbox>
+              <ElCheckbox v-model="formData.rememberPassword"
+                >{{ $t('login.rememberPwd') }}
+              </ElCheckbox>
               <RouterLink :to="RoutesAlias.ForgetPassword">{{ $t('login.forgetPwd') }}</RouterLink>
             </div>
 
@@ -134,6 +134,9 @@
   const isPassing = ref(false)
   const isClickPass = ref(false)
 
+  // 是否开启滑动验证
+  const enableClickPass = ref(false)
+
   const systemName = AppConfig.systemInfo.name
   const formRef = ref<FormInstance>()
 
@@ -158,7 +161,7 @@
 
     await formRef.value.validate(async (valid) => {
       if (valid) {
-        if (!isPassing.value) {
+        if (enableClickPass.value && !isPassing.value) {
           isClickPass.value = true
           return
         }
