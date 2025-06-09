@@ -22,7 +22,7 @@ export interface SaTokenInfo {
 
 // 用户信息
 export interface UserInfo {
-  userId: number
+  userId: string
   userName: string
   roles: string[]
   buttons: string[]
