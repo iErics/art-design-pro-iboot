@@ -10,6 +10,21 @@
     <div class="text-wrap">
       <h1> {{ $t('login.leftView.title') }} </h1>
       <p> {{ $t('login.leftView.subTitle') }} </p>
+      <p>
+        版权所有 © 2025
+        <el-link type="danger" underline="always" href="http://www.iboot.top" target="_blank"
+          >www.iboot.top
+        </el-link>
+        .保留所有权利。前端 Forked 自
+        <el-link
+          target="_blank"
+          type="danger"
+          underline="always"
+          href="https://github.com/Daymychen/art-design-pro"
+          >art-design-pro
+        </el-link>
+        。
+      </p>
     </div>
   </div>
 </template>

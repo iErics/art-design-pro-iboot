@@ -4,6 +4,8 @@
 
 // 基础接口返回的数据结构
 export interface BaseResponse<T = any> {
+  // 是否成功
+  success: boolean
   // 状态码
   code: number
   // 消息

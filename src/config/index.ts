@@ -9,7 +9,7 @@ import { configImages } from './assets/images'
 const appConfig: SystemConfig = {
   // 系统信息
   systemInfo: {
-    name: 'Art Design Pro' // 系统名称
+    name: 'Iboot Studio' // 系统名称
   },
   // Element Plus 主题
   elementPlusTheme: {

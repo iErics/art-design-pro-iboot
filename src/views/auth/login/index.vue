@@ -35,7 +35,17 @@
       <div class="login-wrap">
         <div class="form">
           <h3 class="title">{{ $t('login.title') }}</h3>
-          <p class="sub-title">{{ $t('login.subTitle') }}</p>
+          <p class="sub-title"
+            >关注微信公号
+            <el-link
+              target="_blank"
+              type="primary"
+              underline="always"
+              href="./iboot/iboot_wx_pub.jpg"
+              >iboot
+            </el-link>
+            回复 “iboot” 获取账户密码登录体验。
+          </p>
           <ElForm
             ref="formRef"
             :model="formData"
@@ -44,14 +54,20 @@
             style="margin-top: 25px"
           >
             <ElFormItem prop="username">
-              <ElInput :placeholder="$t('login.placeholder[0]')" v-model.trim="formData.username" />
+              <ElInput
+                :placeholder="$t('login.placeholder[0]')"
+                v-model.trim="formData.username"
+                :prefix-icon="User"
+              />
             </ElFormItem>
             <ElFormItem prop="password">
               <ElInput
                 :placeholder="$t('login.placeholder[1]')"
                 v-model.trim="formData.password"
+                :prefix-icon="Lock"
                 type="password"
                 radius="8px"
+                show-password
                 autocomplete="off"
               />
             </ElFormItem>
@@ -117,6 +133,8 @@
   import { languageOptions } from '@/locales'
   import { LanguageEnum, SystemThemeEnum } from '@/enums/appEnum'
   import { useI18n } from 'vue-i18n'
+  import { User, Lock } from '@element-plus/icons-vue'
+  import { SysService } from '@/api/sysApi'
 
   defineOptions({ name: 'Login' })
 
@@ -154,7 +172,14 @@
   const loading = ref(false)
   const { width } = useWindowSize()
 
-  onMounted(() => {})
+  onMounted(async () => {
+    const { data, success } = await SysService.getDataByKey({
+      dataKey: 'iboot-studio.slide-validator.enabled'
+    })
+    if (success) {
+      enableClickPass.value = 'true' === data
+    }
+  })
 
   const handleSubmit = async () => {
     if (!formRef.value) return
