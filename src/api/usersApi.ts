@@ -35,9 +35,9 @@ export class UserService {
   }
 
   // 获取用户列表
-  static getUserList(params?: UserListParams) {
+  static getUserPageList(params?: UserListParams) {
     return request.get<BaseResponse>({
-      url: '/user/list',
+      url: '/user/page',
       params
     })
   }

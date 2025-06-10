@@ -84,11 +84,10 @@
 
 <script setup lang="ts">
   import { h } from 'vue'
-  import { ROLE_LIST_DATA, ACCOUNT_TABLE_DATA } from '@/mock/temp/formData'
+  import { ACCOUNT_TABLE_DATA, ROLE_LIST_DATA } from '@/mock/temp/formData'
 
-  import { ElDialog, FormInstance, ElTag } from 'element-plus'
-  import { ElMessageBox, ElMessage } from 'element-plus'
   import type { FormRules } from 'element-plus'
+  import { ElDialog, ElMessage, ElMessageBox, ElTag, FormInstance } from 'element-plus'
   import { useCheckedColumns } from '@/composables/useCheckedColumns'
   import ArtButtonTable from '@/components/core/forms/ArtButtonTable.vue'
   import { UserService } from '@/api/usersApi'
@@ -342,7 +341,15 @@
       prop: 'userGender',
       label: '性别',
       sortable: true,
-      formatter: (row) => (row.userGender === 1 ? '男' : '女')
+      formatter: (row) => {
+        if (row.userGender === 0) {
+          return '女'
+        } else if (row.userGender === 1) {
+          return '男'
+        } else {
+          return '未知'
+        }
+      }
     },
     { prop: 'userPhone', label: '手机号' },
     {
@@ -403,18 +410,16 @@
         current: pagination.currentPage,
         size: pagination.pageSize
       }
-      const res = await UserService.getUserList(params)
+      const res = await UserService.getUserPageList(params)
       if (res.code === ApiStatus.success) {
         // 使用本地头像替换接口返回的头像
-        const records = res.data.records.map((item: any, index: number) => {
+        tableData.value = res.data.records.map((item: any, index: number) => {
           const avatarIndex = index % ACCOUNT_TABLE_DATA.length
           return {
             ...item,
             avatar: ACCOUNT_TABLE_DATA[avatarIndex].avatar
           }
         })
-
-        tableData.value = records
         loading.value = false
 
         pagination.currentPage = res.data.current
