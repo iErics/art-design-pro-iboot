@@ -84,7 +84,7 @@
 
 <script setup lang="ts">
   import { h } from 'vue'
-  import { ACCOUNT_TABLE_DATA, ROLE_LIST_DATA } from '@/mock/temp/formData'
+  import { ROLE_LIST_DATA } from '@/mock/temp/formData'
 
   import type { FormRules } from 'element-plus'
   import { ElDialog, ElMessage, ElMessageBox, ElTag, FormInstance } from 'element-plus'
@@ -242,25 +242,25 @@
   const columnOptions = [
     { label: '勾选', type: 'selection' },
     { label: '用户名', prop: 'avatar' },
-    { label: '手机号', prop: 'userPhone' },
+    { label: '手机号', prop: 'mobile' },
     { label: '性别', prop: 'gender' },
     { label: '角色', prop: 'role' },
-    { label: '状态', prop: 'status' },
+    { label: '状态', prop: 'userStatus' },
     { label: '创建日期', prop: 'createTime' },
     { label: '操作', prop: 'operation' }
   ]
 
   // 获取标签类型
-  // 1: 在线 2: 离线 3: 异常 4: 注销
-  const getTagType = (status: string) => {
+  // 0：禁用 1: 启用 2: 离线 3: 异常 4: 注销
+  const getTagType = (status: number) => {
     switch (status) {
-      case '1':
+      case 1:
         return 'success'
-      case '2':
+      case 2:
         return 'info'
-      case '3':
+      case 3:
         return 'warning'
-      case '4':
+      case 0:
         return 'danger'
       default:
         return 'info'
@@ -268,15 +268,15 @@
   }
 
   // 构建标签文本
-  const buildTagText = (status: string) => {
+  const buildTagText = (status: number) => {
     let text = ''
-    if (status === '1') {
-      text = '在线'
-    } else if (status === '2') {
-      text = '离线'
-    } else if (status === '3') {
+    if (status === 0) {
+      text = '禁用'
+    } else if (status === 1) {
+      text = '启用'
+    } else if (status === 3) {
       text = '异常'
-    } else if (status === '4') {
+    } else if (status === 4) {
       text = '注销'
     }
     return text
@@ -331,32 +331,32 @@
         return h('div', { class: 'user', style: 'display: flex; align-items: center' }, [
           h('img', { class: 'avatar', src: row.avatar }),
           h('div', {}, [
-            h('p', { class: 'user-name' }, row.userName),
-            h('p', { class: 'email' }, row.userEmail)
+            h('p', { class: 'user-name' }, `${row.realName} | ${row.userName}`),
+            h('p', { class: 'email' }, row.email)
           ])
         ])
       }
     },
     {
-      prop: 'userGender',
+      prop: 'gender',
       label: '性别',
       sortable: true,
       formatter: (row) => {
-        if (row.userGender === 0) {
+        if (row.gender === 0) {
           return '女'
-        } else if (row.userGender === 1) {
+        } else if (row.gender === 1) {
           return '男'
         } else {
           return '未知'
         }
       }
     },
-    { prop: 'userPhone', label: '手机号' },
+    { prop: 'mobile', label: '手机号' },
     {
-      prop: 'status',
+      prop: 'userStatus',
       label: '状态',
       formatter: (row) => {
-        return h(ElTag, { type: getTagType(row.status) }, () => buildTagText(row.status))
+        return h(ElTag, { type: getTagType(row.userStatus) }, () => buildTagText(row.userStatus))
       }
     },
     {
@@ -413,13 +413,13 @@
       const res = await UserService.getUserPageList(params)
       if (res.code === ApiStatus.success) {
         // 使用本地头像替换接口返回的头像
-        tableData.value = res.data.records.map((item: any, index: number) => {
+        tableData.value = res.data.records /*.map((item: any, index: number) => {
           const avatarIndex = index % ACCOUNT_TABLE_DATA.length
           return {
             ...item,
             avatar: ACCOUNT_TABLE_DATA[avatarIndex].avatar
           }
-        })
+        })*/
         loading.value = false
 
         pagination.currentPage = res.data.current
