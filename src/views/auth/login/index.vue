@@ -195,7 +195,8 @@
 
         const params = {
           userName: formData.username,
-          password: formData.password
+          password: formData.password,
+          rememberPassword: formData.rememberPassword
         }
 
         try {
@@ -222,6 +223,7 @@
               }
             }
           } else {
+            ElMessage.error(res.msg)
             loading.value = false
             resetDragVerify()
           }

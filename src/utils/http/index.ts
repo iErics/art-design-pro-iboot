@@ -8,7 +8,7 @@ import type { RequestOptions, ErrorMessageMode } from '@/types/api'
 const axiosInstance = axios.create({
   timeout: 15000, // 请求超时时间(毫秒)
   baseURL: import.meta.env.VITE_API_URL, // API地址
-  withCredentials: true, // 异步请求携带cookie
+  withCredentials: false, // 异步请求携带cookie
   transformRequest: [(data) => JSON.stringify(data)], // 请求数据转换为 JSON 字符串
   validateStatus: (status) => status >= 200 && status < 300, // 只接受 2xx 的状态码
   headers: {
