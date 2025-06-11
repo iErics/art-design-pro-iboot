@@ -155,7 +155,7 @@ function loadComponent(componentPath: string, routeName: string): () => Promise<
  * 转换后的路由配置类型
  */
 interface ConvertedRoute extends Omit<RouteRecordRaw, 'children'> {
-  id?: number
+  id?: string
   children?: ConvertedRoute[]
   component?: RouteRecordRaw['component'] | (() => Promise<any>)
 }
