@@ -19,7 +19,8 @@ export class MenuService {
   // 获取菜单列表
   static async getMenuList(): Promise<MenuResponse> {
     try {
-      const menuData = (await this.getUserMenu()).data as AppRouteRecord[]
+      const { data } = await this.getUserMenu()
+      const menuData = data as AppRouteRecord[]
       if (menuData.length === 0) {
         ElMessage.warning('您没有任何菜单权限，请联系系统管理员！')
       }
