@@ -1,8 +1,8 @@
-import { asyncRoutes } from '@/router/routes/asyncRoutes'
 import { menuDataToRouter } from '@/router/utils/menuToRouter'
 import { AppRouteRecord } from '@/types/router'
 import request from '@/utils/http'
 import { BaseResponse } from '@/types'
+import { ElMessage } from 'element-plus'
 
 interface MenuResponse {
   menuList: AppRouteRecord[]
@@ -20,26 +20,11 @@ export class MenuService {
   static async getMenuList(): Promise<MenuResponse> {
     try {
       const menuData = (await this.getUserMenu()).data as AppRouteRecord[]
+      if (menuData.length === 0) {
+        ElMessage.warning('您没有任何菜单权限，请联系系统管理员！')
+      }
       // 处理菜单数据（当没有权限时需要判断 menuData 为空的情况用 ? 解决）
       const menuList = menuData?.map((route) => menuDataToRouter(route))
-      return { menuList }
-    } catch (error) {
-      throw error instanceof Error ? error : new Error('获取菜单失败')
-    }
-  }
-}
-
-// 菜单接口
-export const menuService = {
-  async getMenuList(delay = 300): Promise<MenuResponse> {
-    try {
-      // 模拟接口返回的菜单数据
-      const menuData = asyncRoutes
-      // 处理菜单数据
-      const menuList = menuData.map((route) => menuDataToRouter(route))
-      // 模拟接口延迟
-      await new Promise((resolve) => setTimeout(resolve, delay))
-
       return { menuList }
     } catch (error) {
       throw error instanceof Error ? error : new Error('获取菜单失败')

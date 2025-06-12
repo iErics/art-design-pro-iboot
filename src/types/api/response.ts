@@ -10,6 +10,8 @@ export interface BaseResponse<T = any> {
   code: number
   // 消息
   msg: string
+  // 详细消息
+  detailMsg: string
   // 数据
   data: T
   // 可选字段，用于返回 token

@@ -6,7 +6,10 @@ export class SysService {
   static getDataByKey(params: { dataKey: string }) {
     return request.get<BaseResponse>({
       url: '/sys/public/data-config',
-      params
+      params,
+      requestOptions: {
+        withToken: false
+      }
     })
   }
 }

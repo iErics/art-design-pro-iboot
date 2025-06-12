@@ -84,8 +84,6 @@
 
 <script setup lang="ts">
   import { h } from 'vue'
-  import { ROLE_LIST_DATA } from '@/mock/temp/formData'
-
   import type { FormRules } from 'element-plus'
   import { ElDialog, ElMessage, ElMessageBox, ElTag, FormInstance } from 'element-plus'
   import { useCheckedColumns } from '@/composables/useCheckedColumns'
@@ -93,6 +91,7 @@
   import { UserService } from '@/api/usersApi'
   import { ApiStatus } from '@/utils/http/status'
   import { SearchChangeParams, SearchFormItem } from '@/types'
+  import { RoleService } from '@/api/roleApi'
 
   defineOptions({ name: 'User' }) // 定义组件名称，用于 KeepAlive 缓存控制
 
@@ -432,8 +431,13 @@
     }
   }
 
-  const getRoleList = () => {
-    roleList.value = ROLE_LIST_DATA
+  const getRoleList = async () => {
+    const res = await RoleService.getRolePageList({})
+    if (res.success) {
+      roleList.value = res.data.records
+    } else {
+      ElMessage.error(res.msg)
+    }
   }
 
   const handleRefresh = () => {

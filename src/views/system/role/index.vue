@@ -2,11 +2,11 @@
   <div class="page-content">
     <ElRow>
       <ElCol :xs="24" :sm="12" :lg="6">
-        <ElInput placeholder="部门名称"></ElInput>
+        <ElInput placeholder="角色名称"></ElInput>
       </ElCol>
       <div style="width: 12px"></div>
       <ElCol :xs="24" :sm="12" :lg="6" class="el-col2">
-        <ElButton v-ripple>搜索</ElButton>
+        <ElButton @click="getTableData" v-ripple>搜索</ElButton>
         <ElButton @click="showDialog('add')" v-ripple>新增角色</ElButton>
       </ElCol>
     </ElRow>
@@ -15,17 +15,17 @@
       <template #default>
         <ElTableColumn label="角色名称" prop="roleName" />
         <ElTableColumn label="角色编码" prop="roleCode" />
-        <ElTableColumn label="描述" prop="des" />
+        <ElTableColumn label="描述" prop="description" />
         <ElTableColumn label="启用" prop="enable">
           <template #default="scope">
-            <ElTag :type="scope.row.enable ? 'primary' : 'info'">
-              {{ scope.row.enable ? '启用' : '禁用' }}
+            <ElTag :type="scope.row.enabled ? 'primary' : 'info'">
+              {{ scope.row.enabled ? '启用' : '禁用' }}
             </ElTag>
           </template>
         </ElTableColumn>
-        <ElTableColumn label="创建时间" prop="date">
+        <ElTableColumn label="创建时间" prop="createTime">
           <template #default="scope">
-            {{ formatDate(scope.row.date) }}
+            {{ formatDate(scope.row.createTime) }}
           </template>
         </ElTableColumn>
         <ElTableColumn fixed="right" label="操作" width="200px">
@@ -62,10 +62,10 @@
           <ElInput v-model="form.roleCode" />
         </ElFormItem>
         <ElFormItem label="描述" prop="roleStatus">
-          <ElInput v-model="form.des" type="textarea" :rows="3" />
+          <ElInput v-model="form.description" type="textarea" :rows="3" />
         </ElFormItem>
         <ElFormItem label="启用">
-          <ElSwitch v-model="form.enable" />
+          <ElSwitch v-model="form.enabled" />
         </ElFormItem>
       </ElForm>
       <template #footer>
@@ -123,7 +123,8 @@
   import type { FormInstance, FormRules } from 'element-plus'
   import { formatMenuTitle } from '@/router/utils/utils'
   // import { ButtonMoreItem } from '@/components/core/forms/ArtButtonMore.vue'
-  import { Role, ROLE_LIST_DATA } from '@/mock/temp/formData'
+  import { Role } from '@/mock/temp/formData'
+  import { RoleService } from '@/api/roleApi'
 
   defineOptions({ name: 'Role' })
 
@@ -175,11 +176,11 @@
   })
 
   const form = reactive<Role>({
+    roleId: '',
     roleName: '',
     roleCode: '',
-    des: '',
-    date: '',
-    enable: true
+    description: '',
+    enabled: true
   })
 
   const roleList = ref<Role[]>([])
@@ -188,8 +189,13 @@
     getTableData()
   })
 
-  const getTableData = () => {
-    roleList.value = ROLE_LIST_DATA
+  const getTableData = async () => {
+    const res = await RoleService.getRolePageList({})
+    if (res.success) {
+      roleList.value = res.data.records
+    } else {
+      ElMessage.error(res.msg)
+    }
   }
 
   const dialogType = ref('add')
@@ -199,17 +205,18 @@
     dialogType.value = type
 
     if (type === 'edit' && row) {
+      form.roleId = row.roleId
       form.roleName = row.roleName
       form.roleCode = row.roleCode
-      form.des = row.des
-      form.date = row.date
-      form.enable = row.enable
+      form.description = row.description
+      form.createTime = row.createTime
+      form.enabled = row.enabled === 1
     } else {
       form.roleName = ''
       form.roleCode = ''
-      form.des = ''
-      form.date = ''
-      form.enable = true
+      form.description = ''
+      form.createTime = ''
+      form.enabled = true
     }
   }
 
