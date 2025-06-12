@@ -80,9 +80,13 @@ function processRequestConfig(config: ExtendedRequestConfig): AxiosRequestConfig
   // 应用自定义请求选项
   if (requestOptions) {
     // 处理是否携带token
+    // 处理是否携带token
     if (requestOptions.withToken === false) {
+      const { saTokenInfo } = useUserStore()
       axiosConfig.headers = { ...axiosConfig.headers }
-      delete axiosConfig.headers?.Authorization
+      if (axiosConfig.headers) {
+        delete axiosConfig.headers[saTokenInfo.tokenName as string]
+      }
     }
 
     // 处理是否添加时间戳
