@@ -211,13 +211,12 @@
 
               // 设置登录状态
               userStore.setLoginStatus(true)
-              // 登录成功提示
-              showLoginSuccessNotice()
-
               if (res.code === ApiStatus.success) {
                 userStore.setUserInfo(res.data)
                 userStore.setLoginStatus(true)
-                router.push(HOME_PAGE)
+                await router.push(HOME_PAGE)
+                // 登录成功提示
+                showLoginSuccessNotice()
               } else {
                 ElMessage.error(res.msg)
               }
