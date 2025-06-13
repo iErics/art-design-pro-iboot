@@ -4,6 +4,7 @@ import { useUserStore } from '@/store/modules/user'
 import EmojiText from '../ui/emojo'
 import { ApiStatus } from './status'
 import type { RequestOptions, ErrorMessageMode } from '@/types/api'
+import { Delete } from '@element-plus/icons-vue'
 
 const axiosInstance = axios.create({
   timeout: 15000, // 请求超时时间(毫秒)
@@ -79,6 +80,8 @@ function processRequestConfig(config: ExtendedRequestConfig): AxiosRequestConfig
 
   // 应用自定义请求选项
   if (requestOptions) {
+    // 默认用 modal 来展示错误信息
+    requestOptions.errorMessageMode = 'modal'
     // 处理是否携带token
     // 处理是否携带token
     if (requestOptions.withToken === false) {
@@ -111,14 +114,22 @@ function handleErrorMessage(error: any, mode: ErrorMessageMode = 'message') {
   if (mode === 'none') return
 
   const errorMessage = error.response?.data.msg
+  const detailMsg = error.response?.data.detailMsg
   const message = errorMessage
     ? `${errorMessage} ${EmojiText[500]}`
     : `请求超时或服务器异常！${EmojiText[500]}`
 
   if (mode === 'modal') {
-    // TODO: 可以使用 ElMessageBox 显示模态框
-    ElMessage.error(message)
-  } else {
+    ElMessageBox.confirm(detailMsg, message, {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'error',
+      icon: markRaw(Delete),
+      draggable: true
+    })
+      .then(() => {})
+      .catch(() => {})
+  } else if (mode === 'message') {
     ElMessage.error(message)
   }
 }
