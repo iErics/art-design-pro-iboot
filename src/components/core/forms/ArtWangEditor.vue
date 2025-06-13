@@ -62,7 +62,7 @@
         server,
         // 传递token
         headers: {
-          [saTokenInfo.tokenName as string]: saTokenInfo.tokenValue
+          [saTokenInfo.tokenName as string]: 'Bearer ' + saTokenInfo.tokenValue
         },
         // 单个文件上传成功之后
         onSuccess() {

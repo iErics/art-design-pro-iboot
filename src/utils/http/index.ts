@@ -38,7 +38,7 @@ axiosInstance.interceptors.request.use(
     // 如果 token 存在，则设置请求头
     if (saTokenInfo?.tokenValue) {
       request.headers['Content-Type'] = 'application/json'
-      request.headers[`${saTokenInfo.tokenName}`] = saTokenInfo.tokenValue
+      request.headers[saTokenInfo.tokenName as string] = 'Bearer ' + saTokenInfo.tokenValue
     }
 
     return request // 返回修改后的配置

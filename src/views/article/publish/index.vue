@@ -95,7 +95,7 @@
   const uploadImageUrl = `${import.meta.env.VITE_API_URL}/api/common/upload`
   // 传递 token
   const uploadHeaders = computed(() => ({
-    [saTokenInfo.tokenName as string]: saTokenInfo.tokenValue
+    [saTokenInfo.tokenName as string]: 'Bearer ' + saTokenInfo.tokenValue
   }))
 
   let pageMode: PageModeEnum = PageModeEnum.Add // 页面类型 新增 ｜ 编辑
