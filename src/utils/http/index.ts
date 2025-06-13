@@ -80,9 +80,6 @@ function processRequestConfig(config: ExtendedRequestConfig): AxiosRequestConfig
 
   // 应用自定义请求选项
   if (requestOptions) {
-    // 默认用 modal 来展示错误信息
-    requestOptions.errorMessageMode = 'modal'
-    // 处理是否携带token
     // 处理是否携带token
     if (requestOptions.withToken === false) {
       const { saTokenInfo } = useUserStore()
@@ -122,7 +119,10 @@ function handleErrorMessage(error: any, mode: ErrorMessageMode = 'message') {
   if (mode === 'modal') {
     ElMessageBox.confirm(detailMsg, message, {
       confirmButtonText: '确认',
-      cancelButtonText: '取消',
+      showCancelButton: false,
+      showClose: false,
+      closeOnClickModal: false,
+      closeOnPressEscape: false,
       type: 'error',
       icon: markRaw(Delete),
       draggable: true
@@ -136,6 +136,10 @@ function handleErrorMessage(error: any, mode: ErrorMessageMode = 'message') {
 
 // 请求
 async function request<T = any>(config: ExtendedRequestConfig): Promise<T> {
+  if (!config.requestOptions?.errorMessageMode) {
+    // 如果没有配置响应错误提示就默认使用 modal 来展示
+    config.requestOptions = { ...config.requestOptions, errorMessageMode: 'modal' }
+  }
   const processedConfig = processRequestConfig(config)
 
   // 对 POST | PUT 请求特殊处理
