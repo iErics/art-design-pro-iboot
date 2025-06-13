@@ -1,12 +1,24 @@
 import { BaseResponse } from '@/types'
 import { h } from 'vue'
-import { ElMessageBox, ElText, ElCollapse, ElCollapseItem } from 'element-plus'
+import { ElMessageBox, ElText, ElCollapse, ElCollapseItem, ElMessage } from 'element-plus'
 
 export class Result {
-  static tip(resp: BaseResponse, showDetail: boolean = true) {
-    const { success, msg, detailMsg } = resp
+  static async tip(resp: BaseResponse, showDetail: boolean = true) {
+    const { msg, detailMsg } = resp
+
+    // 辅助函数：复制文本到剪贴板并提供反馈
+    const copyToClipboardWithFeedback = async (text: string) => {
+      try {
+        await navigator.clipboard.writeText(text)
+        ElMessage.success('已复制详情到剪切板')
+      } catch (err) {
+        console.error('Failed to copy text: ', err)
+        ElMessage.error('复制失败')
+      }
+    }
+
     ElMessageBox({
-      title: '提示',
+      title: '操作提示',
       message: h(
         'div',
         null,
@@ -14,20 +26,41 @@ export class Result {
           h(ElText, { type: 'danger' }, msg),
           detailMsg &&
             showDetail &&
-            h(ElCollapse, { expandIconPosition: 'left' }, [
-              h(ElCollapseItem, { title: '详情' }, () => h(ElText, { type: 'danger' }, detailMsg))
-            ])
+            h(
+              ElCollapse,
+              {
+                expandIconPosition: 'left'
+              },
+              [
+                h(
+                  ElCollapseItem,
+                  {
+                    title: '详情',
+                    style: {
+                      maxHeight: '600px',
+                      overflowY: 'auto'
+                    }
+                  },
+                  () => h(ElText, { type: 'danger' }, detailMsg)
+                )
+              ]
+            )
         ].filter(Boolean)
       ),
       confirmButtonText: '确认',
-      showCancelButton: false,
+      cancelButtonText: '复制',
+      showCancelButton: showDetail,
       showClose: false,
       closeOnClickModal: false,
       closeOnPressEscape: false,
-      type: success ? 'primary' : 'error',
       draggable: true
     })
       .then(() => {})
-      .catch(() => {})
+      .catch((action) => {
+        // ElMessageBox 的 catch 回调会收到点击的按钮类型，'cancel' 对应复制按钮
+        if (action === 'cancel' && detailMsg) {
+          copyToClipboardWithFeedback(detailMsg)
+        }
+      })
   }
 }

@@ -222,7 +222,7 @@
               }
             }
           } else {
-            Result.tip(loginResp, true)
+            await Result.tip(loginResp, true)
             loading.value = false
             resetDragVerify()
           }
