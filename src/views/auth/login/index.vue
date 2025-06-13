@@ -200,29 +200,29 @@
         }
 
         try {
-          const res = await UserService.login(params)
+          const loginResp = await UserService.login(params)
 
-          if (res.code === ApiStatus.success) {
-            const { saTokenInfo } = res.data
+          if (loginResp.code === ApiStatus.success) {
+            const { saTokenInfo } = loginResp.data
 
             if (saTokenInfo?.tokenValue) {
               userStore.setSaTokenInfo(saTokenInfo)
-              const res = await UserService.getUserInfo()
+              const userInfoResp = await UserService.getUserInfo()
 
               // 设置登录状态
               userStore.setLoginStatus(true)
-              if (res.code === ApiStatus.success) {
-                userStore.setUserInfo(res.data)
+              if (userInfoResp.code === ApiStatus.success) {
+                userStore.setUserInfo(userInfoResp.data)
                 userStore.setLoginStatus(true)
                 await router.push(HOME_PAGE)
                 // 登录成功提示
                 showLoginSuccessNotice()
               } else {
-                ElMessage.error(res.msg)
+                ElMessage.error(userInfoResp.msg)
               }
             }
           } else {
-            ElMessage.error(res.msg)
+            Result.tip(loginResp, true)
             loading.value = false
             resetDragVerify()
           }
@@ -264,6 +264,7 @@
   // 切换主题
   import { useTheme } from '@/composables/useTheme'
   import { UserService } from '@/api/usersApi'
+  import { Result } from '@/utils/ui/result'
 
   const toggleTheme = () => {
     let { LIGHT, DARK } = SystemThemeEnum
