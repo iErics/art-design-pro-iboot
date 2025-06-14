@@ -44,7 +44,7 @@
               href="./iboot/iboot_wx_pub.jpg"
               >iboot
             </el-link>
-            回复 “iboot” 获取账户密码登录体验。
+            回复 "iboot" 获取账户密码登录体验。
           </p>
           <ElForm
             ref="formRef"
@@ -135,6 +135,8 @@
   import { useI18n } from 'vue-i18n'
   import { User, Lock } from '@element-plus/icons-vue'
   import { SysService } from '@/api/sysApi'
+  import { useRouter } from 'vue-router'
+  import CryptoJS from 'crypto-js'
 
   defineOptions({ name: 'Login' })
 
@@ -172,13 +174,17 @@
   const loading = ref(false)
   const { width } = useWindowSize()
 
-  onMounted(async () => {
-    const { data, success } = await SysService.getDataByKey({
+  const initData = async () => {
+    let { data: slideData, success: slideSuccess } = await SysService.getDataByKey({
       dataKey: 'iboot-studio.slide-validator.enabled'
     })
-    if (success) {
-      enableClickPass.value = 'true' === data
+    if (slideSuccess) {
+      enableClickPass.value = 'true' === slideData
     }
+  }
+
+  onMounted(async () => {
+    await initData()
   })
 
   const handleSubmit = async () => {
@@ -195,7 +201,7 @@
 
         const params = {
           userName: formData.username,
-          password: formData.password,
+          password: CryptoJS.SHA256(formData.password).toString(CryptoJS.enc.Hex),
           rememberPassword: formData.rememberPassword
         }
 
