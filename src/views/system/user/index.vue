@@ -47,11 +47,17 @@
           align-center
         >
           <ElForm ref="formRef" :model="formData" :rules="rules" label-width="80px">
-            <ElFormItem label="用户名" prop="username">
-              <ElInput v-model="formData.username" />
+            <ElFormItem label="用户名" prop="userName">
+              <ElInput v-model="formData.userName" />
             </ElFormItem>
-            <ElFormItem label="手机号" prop="phone">
-              <ElInput v-model="formData.phone" />
+            <ElFormItem label="姓名" prop="realName">
+              <ElInput v-model="formData.realName" />
+            </ElFormItem>
+            <ElFormItem label="手机号" prop="mobile">
+              <ElInput v-model="formData.mobile" />
+            </ElFormItem>
+            <ElFormItem label="邮箱" prop="email">
+              <ElInput v-model="formData.email" />
             </ElFormItem>
             <ElFormItem label="性别" prop="gender">
               <ElSelect v-model="formData.gender">
@@ -64,14 +70,17 @@
               </ElSelect>
             </ElFormItem>
             <ElFormItem label="角色" prop="role">
-              <ElSelect v-model="formData.role" multiple>
+              <ElSelect v-model="formData.roleIds" multiple>
                 <ElOption
                   v-for="role in roleList"
-                  :key="role.roleCode"
-                  :value="role.roleCode"
+                  :key="role.roleId"
+                  :value="role.roleId"
                   :label="role.roleName"
                 />
               </ElSelect>
+            </ElFormItem>
+            <ElFormItem label="简介" prop="intro">
+              <ElInput v-model="formData.intro" :rows="2" type="textarea" />
             </ElFormItem>
           </ElForm>
           <template #footer>
@@ -299,17 +308,15 @@
     }
 
     if (type === 'edit' && row) {
-      formData.username = row.username
-      formData.phone = row.userPhone
-      formData.gender = row.gender
+      formData.value = { ...row }
 
       // 将用户角色代码数组直接赋值给formData.role
-      formData.role = Array.isArray(row.userRoles) ? row.userRoles : []
+      formData.value.roleIds = Array.isArray(row.userRoles) ? row.userRoles : []
     } else {
-      formData.username = ''
-      formData.phone = ''
-      formData.gender = 0
-      formData.role = []
+      formData.value.userName = ''
+      formData.value.mobile = ''
+      formData.value.gender = 0
+      formData.value.roleIds = []
     }
   }
 
@@ -390,11 +397,16 @@
   const formRef = ref<FormInstance>()
 
   // 表单数据
-  const formData = reactive({
-    username: '',
-    phone: '',
-    gender: 0,
-    role: [] as string[]
+  const formData = ref({
+    userId: '',
+    userName: '',
+    realName: '',
+    gender: 1,
+    email: '',
+    mobile: '',
+    avatar: '',
+    intro: '',
+    roleIds: [] as string[]
   })
 
   onMounted(() => {
@@ -462,28 +474,37 @@
 
   // 表单验证规则
   const rules = reactive<FormRules>({
-    username: [
+    userName: [
       { required: true, message: '请输入用户名', trigger: 'blur' },
       { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
     ],
-    phone: [
+    realName: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+    mobile: [
       { required: true, message: '请输入手机号', trigger: 'blur' },
       { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号格式', trigger: 'blur' }
     ],
     gender: [{ required: true, message: '请选择性别', trigger: 'change' }],
-    role: [{ required: true, message: '请选择角色', trigger: 'change' }]
+    roleIds: [{ required: true, message: '请选择角色', trigger: 'change' }]
   })
 
   // 提交表单
   const handleSubmit = async () => {
-    if (!formRef.value) return
+    if (!formRef.value) {
+      return
+    }
 
-    await formRef.value.validate((valid) => {
-      if (valid) {
-        ElMessage.success(dialogType.value === 'add' ? '添加成功' : '更新成功')
-        dialogVisible.value = false
+    try {
+      await formRef.value.validate()
+      const { success, msg } = await UserService.saveOrUpdate(formData.value)
+      if (!success) {
+        return ElMessage.error(msg)
       }
-    })
+      ElMessage.success(dialogType.value === 'add' ? '添加成功' : '更新成功')
+      dialogVisible.value = false
+      await getUserList()
+    } catch (error) {
+      console.error('表单验证失败:', error)
+    }
   }
 
   // 处理表格分页变化

@@ -11,6 +11,18 @@ interface UserListParams {
   size?: number
 }
 
+interface UserAddOrUpdateParams {
+  userId?: string
+  userName: string
+  realName: string
+  gender?: number
+  email?: string
+  mobile?: string
+  avatar?: string
+  intro?: string
+  roleIds?: string[]
+}
+
 export class UserService {
   // 登录
   static login(params: LoginParams) {
@@ -39,6 +51,14 @@ export class UserService {
     return request.get<BaseResponse>({
       url: '/user/page',
       params
+    })
+  }
+
+  // 新增或修改用户
+  static saveOrUpdate(data?: UserAddOrUpdateParams) {
+    return request.post<BaseResponse>({
+      url: '/user/saveOrUpdate',
+      data
     })
   }
 }
