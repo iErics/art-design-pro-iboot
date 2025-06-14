@@ -55,8 +55,12 @@
             </ElFormItem>
             <ElFormItem label="性别" prop="gender">
               <ElSelect v-model="formData.gender">
-                <ElOption label="男" value="男" />
-                <ElOption label="女" value="女" />
+                <ElOption
+                  v-for="item in genderOptions"
+                  :key="item.value"
+                  :value="item.value"
+                  :label="item.label"
+                />
               </ElSelect>
             </ElFormItem>
             <ElFormItem label="角色" prop="role">
@@ -90,10 +94,13 @@
   import ArtButtonTable from '@/components/core/forms/ArtButtonTable.vue'
   import { UserService } from '@/api/usersApi'
   import { ApiStatus } from '@/utils/http/status'
-  import { SearchChangeParams, SearchFormItem } from '@/types'
+  import { Option, SearchChangeParams, SearchFormItem } from '@/types'
   import { RoleService } from '@/api/roleApi'
+  import { SysService } from '@/api/sysApi'
 
   defineOptions({ name: 'User' }) // 定义组件名称，用于 KeepAlive 缓存控制
+
+  const genderOptions = ref<Option[]>([])
 
   const dialogType = ref('add')
   const dialogVisible = ref(false)
@@ -294,14 +301,14 @@
     if (type === 'edit' && row) {
       formData.username = row.username
       formData.phone = row.userPhone
-      formData.gender = row.gender === 1 ? '男' : '女'
+      formData.gender = row.gender
 
       // 将用户角色代码数组直接赋值给formData.role
       formData.role = Array.isArray(row.userRoles) ? row.userRoles : []
     } else {
       formData.username = ''
       formData.phone = ''
-      formData.gender = '男'
+      formData.gender = 0
       formData.role = []
     }
   }
@@ -341,13 +348,8 @@
       label: '性别',
       sortable: true,
       formatter: (row) => {
-        if (row.gender === 0) {
-          return '女'
-        } else if (row.gender === 1) {
-          return '男'
-        } else {
-          return '未知'
-        }
+        const option = genderOptions.value.find((item) => item.value === row.gender)
+        return option?.label || '未知'
       }
     },
     { prop: 'mobile', label: '手机号' },
@@ -391,17 +393,26 @@
   const formData = reactive({
     username: '',
     phone: '',
-    gender: '',
+    gender: 0,
     role: [] as string[]
   })
 
   onMounted(() => {
     getUserList()
     getRoleList()
+    getGenderOptions()
   })
 
-  // 获取用户信息
+  const getGenderOptions = async () => {
+    const { success, data, msg } = await SysService.getOptions({ name: 'gender' })
+    if (!success) {
+      return ElMessage.error(msg)
+    }
+    // 根据选项名称动态获取对应的选项数组
+    genderOptions.value = data.find((item: any) => item.name === 'gender')?.options || []
+  }
 
+  // 获取用户信息
   const getUserList = async () => {
     loading.value = true
     try {

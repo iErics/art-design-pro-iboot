@@ -12,4 +12,12 @@ export class SysService {
       }
     })
   }
+
+  // 下拉选项
+  static getOptions(params: { name?: string }) {
+    return request.get<BaseResponse>({
+      url: '/enums/options',
+      params
+    })
+  }
 }
