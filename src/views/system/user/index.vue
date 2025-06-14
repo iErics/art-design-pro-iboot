@@ -331,6 +331,46 @@
     })
   }
 
+  // 生成随机颜色
+  const getRandomColor = () => {
+    const colors = [
+      '#1890ff', // 蓝色
+      '#52c41a', // 绿色
+      '#faad14', // 黄色
+      '#f5222d', // 红色
+      '#722ed1', // 紫色
+      '#13c2c2', // 青色
+      '#eb2f96', // 粉色
+      '#fa8c16' // 橙色
+    ]
+    return colors[Math.floor(Math.random() * colors.length)]
+  }
+
+  // 生成头像
+  const generateAvatar = (name: string) => {
+    const lastTwoChars = name.slice(-2)
+    const color = getRandomColor()
+    return h(
+      'div',
+      {
+        class: 'avatar-placeholder',
+        style: {
+          backgroundColor: color,
+          width: '40px',
+          height: '40px',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: '16px',
+          fontWeight: 'bold'
+        }
+      },
+      lastTwoChars
+    )
+  }
+
   // 动态列配置
   const { columnChecks, columns } = useCheckedColumns(() => [
     { type: 'selection' }, // 勾选列
@@ -342,7 +382,9 @@
       minWidth: 220,
       formatter: (row: any) => {
         return h('div', { class: 'user', style: 'display: flex; align-items: center' }, [
-          h('img', { class: 'avatar', src: row.avatar }),
+          row.avatar
+            ? h('img', { class: 'avatar', src: row.avatar })
+            : generateAvatar(row.realName),
           h('div', {}, [
             h('p', { class: 'user-name' }, `${row.realName} | ${row.userName}`),
             h('p', { class: 'email' }, row.email)
