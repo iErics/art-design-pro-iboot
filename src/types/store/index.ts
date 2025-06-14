@@ -24,6 +24,7 @@ export interface SaTokenInfo {
 export interface UserInfo {
   userId: string
   userName: string
+  realName: string
   roles: string[]
   buttons: string[]
   avatar?: string

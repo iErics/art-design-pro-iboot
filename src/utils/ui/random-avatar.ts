@@ -22,7 +22,7 @@ export const getRandomColor = () => {
     '#ff6b6b', // 玫瑰红
     '#ffd43b', // 柠檬黄
     '#339af0', // 深天蓝
-    '#51cf66'  // 深薄荷
+    '#51cf66' // 深薄荷
   ]
   return colors[Math.floor(Math.random() * colors.length)]
 }
@@ -50,4 +50,17 @@ export const generateAvatar = (name: string) => {
     },
     lastTwoChars
   )
+}
+
+// 生成头像URL
+export const generateAvatarUrl = (name: string) => {
+  const lastTwoChars = name.slice(-2)
+  const color = getRandomColor()
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="20" fill="${color}"/>
+      <text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#fff" font-size="16" font-weight="bold">${lastTwoChars}</text>
+    </svg>
+  `
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
 }

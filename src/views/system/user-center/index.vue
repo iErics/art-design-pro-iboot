@@ -4,7 +4,7 @@
       <div class="left-wrap">
         <div class="user-wrap box-style">
           <img class="bg" src="@imgs/user/bg.webp" />
-          <img class="avatar" src="@imgs/user/avatar.webp" />
+          <img class="avatar" :src="avatarSrc" />
           <h2 class="name">{{ userInfo.userName }}</h2>
           <p class="des">Iboot Studio 是一款漂亮的后台管理系统模版.</p>
 
@@ -135,11 +135,16 @@
 <script setup lang="ts">
   import { useUserStore } from '@/store/modules/user'
   import { ElForm, FormInstance, FormRules } from 'element-plus'
+  import { generateAvatarUrl } from '@/utils/ui/random-avatar'
 
   defineOptions({ name: 'UserCenter' })
 
   const userStore = useUserStore()
   const userInfo = computed(() => userStore.getUserInfo)
+
+  const avatarSrc = computed(() => {
+    return userInfo.value.avatar || generateAvatarUrl(userInfo.value.realName || '')
+  })
 
   const isEdit = ref(false)
   const isEditPwd = ref(false)

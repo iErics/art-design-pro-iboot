@@ -136,12 +136,12 @@
             popper-style="border: 1px solid var(--art-border-dashed-color); border-radius: calc(var(--custom-radius) / 2 + 4px); padding: 5px 16px; 5px 16px;"
           >
             <template #reference>
-              <img class="cover" src="@imgs/user/avatar.webp" />
+              <img class="cover" :src="avatarSrc" />
             </template>
             <template #default>
               <div class="user-menu-box">
                 <div class="user-head">
-                  <img class="cover" src="@imgs/user/avatar.webp" style="float: left" />
+                  <img class="cover" :src="avatarSrc" style="float: left" />
                   <div class="user-wrap">
                     <span class="name">{{ userInfo.userName }}</span>
                     <span class="email">art.design@gmail.com</span>
@@ -229,6 +229,7 @@
   import { useCommon } from '@/composables/useCommon'
   import { WEB_LINKS } from '@/utils/constants'
   import { themeAnimation } from '@/utils/theme/animation'
+  import { generateAvatarUrl } from '@/utils/ui/random-avatar'
 
   const { t } = useI18n()
 
@@ -236,6 +237,10 @@
 
   const menuTopWidth = computed(() => {
     return width.value * 0.5
+  })
+
+  const avatarSrc = computed(() => {
+    return userInfo.value.avatar || generateAvatarUrl(userInfo.value.realName || '')
   })
 
   onMounted(() => {

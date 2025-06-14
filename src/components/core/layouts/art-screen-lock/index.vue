@@ -3,7 +3,7 @@
     <div v-if="!isLock">
       <el-dialog v-model="visible" :width="370" :show-close="false" @open="handleDialogOpen">
         <div class="lock-content">
-          <img class="cover" src="@imgs/user/avatar.webp" />
+          <img class="cover" :src="avatarSrc" />
           <div class="username">{{ userInfo.userName }}</div>
           <el-form ref="formRef" :model="formData" :rules="rules" @submit.prevent="handleLock">
             <el-form-item prop="password">
@@ -32,7 +32,7 @@
 
     <div class="unlock-content" v-else>
       <div class="box">
-        <img class="cover" src="@imgs/user/avatar.webp" />
+        <img class="cover" :src="avatarSrc" />
         <div class="username">{{ userInfo.userName }}</div>
         <el-form
           ref="unlockFormRef"
@@ -76,6 +76,8 @@
   import { ElMessage } from 'element-plus'
   import { mittBus } from '@/utils/sys'
   import { useI18n } from 'vue-i18n'
+  import { generateAvatarUrl } from '@/utils/ui/random-avatar'
+
   const { t } = useI18n()
 
   const ENCRYPT_KEY = import.meta.env.VITE_LOCK_ENCRYPT_KEY
@@ -86,6 +88,10 @@
   const formRef = ref<FormInstance>()
   const formData = reactive({
     password: ''
+  })
+
+  const avatarSrc = computed(() => {
+    return userInfo.value.avatar || generateAvatarUrl(userInfo.value.realName || '')
   })
 
   const rules = computed<FormRules>(() => ({
