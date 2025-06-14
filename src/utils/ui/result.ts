@@ -49,7 +49,7 @@ export class Result {
       ),
       confirmButtonText: '确认',
       cancelButtonText: '复制',
-      showCancelButton: showDetail,
+      showCancelButton: showDetail && Boolean(detailMsg),
       showClose: false,
       closeOnClickModal: false,
       closeOnPressEscape: false,
