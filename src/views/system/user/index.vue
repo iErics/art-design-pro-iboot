@@ -48,7 +48,7 @@
         >
           <ElForm ref="formRef" :model="formData" :rules="rules" label-width="80px">
             <ElFormItem label="用户名" prop="userName">
-              <ElInput v-model="formData.userName" />
+              <ElInput :readonly="dialogType !== 'add'" v-model="formData.userName" />
             </ElFormItem>
             <ElFormItem label="姓名" prop="realName">
               <ElInput v-model="formData.realName" />
@@ -97,7 +97,7 @@
 
 <script setup lang="ts">
   import { h } from 'vue'
-  import type { FormRules } from 'element-plus'
+  import { ElSelect, FormRules } from 'element-plus'
   import { ElDialog, ElMessage, ElMessageBox, ElTag, FormInstance } from 'element-plus'
   import { useCheckedColumns } from '@/composables/useCheckedColumns'
   import ArtButtonTable from '@/components/core/forms/ArtButtonTable.vue'
@@ -312,7 +312,7 @@
       formData.value = { ...row }
 
       // 将用户角色代码数组直接赋值给formData.role
-      formData.value.roleIds = Array.isArray(row.userRoles) ? row.userRoles : []
+      formData.value.roleIds = Array.isArray(row.roleIds) ? row.roleIds : []
     } else {
       formData.value.userName = ''
       formData.value.mobile = ''
@@ -336,11 +336,11 @@
   const { columnChecks, columns } = useCheckedColumns(() => [
     { type: 'selection' }, // 勾选列
     // { type: 'expand', label: '展开', width: 80 }, // 展开列
-    // { type: 'index', label: '序号', width: 80 }, // 序号列
+    { type: 'index', label: '序号', width: 80 }, // 序号列
     {
       prop: 'avatar',
       label: '用户名',
-      minWidth: 220,
+      minWidth: 120,
       formatter: (row: any) => {
         return h('div', { class: 'user', style: 'display: flex; align-items: center' }, [
           row.avatar
@@ -351,6 +351,27 @@
             h('p', { class: 'email' }, row.email)
           ])
         ])
+      }
+    },
+    {
+      label: '角色',
+      prop: 'roleIds',
+      formatter: (row: any) => {
+        return h(
+          'div',
+          { style: 'display: flex; gap: 4px; flex-wrap: wrap' },
+          row.roleIds.map((roleId: string) => {
+            const role = roleList.value.find((r) => r.roleId === roleId)
+            return h(
+              ElTag,
+              {
+                type: 'primary',
+                size: 'small'
+              },
+              () => role?.roleName || '未知角色'
+            )
+          })
+        )
       }
     },
     {
@@ -483,7 +504,7 @@
     ],
     realName: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
     mobile: [
-      { required: true, message: '请输入手机号', trigger: 'blur' },
+      { required: false, message: '请输入手机号', trigger: 'blur' },
       { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号格式', trigger: 'blur' }
     ],
     gender: [{ required: true, message: '请选择性别', trigger: 'change' }],
