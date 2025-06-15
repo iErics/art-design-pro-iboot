@@ -523,7 +523,7 @@
       if (!success) {
         return ElMessage.error(msg)
       }
-      ElMessage.success(dialogType.value === 'add' ? '添加成功' : '更新成功')
+      ElMessage.success(dialogType.value === 'add' ? msg : '更新成功')
       dialogVisible.value = false
       await getUserList()
     } catch (error) {
