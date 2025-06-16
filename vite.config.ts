@@ -49,7 +49,7 @@ export default ({ mode }) => {
       }
     },
     build: {
-      target: 'es2015',
+      target: 'es2020',
       outDir: 'dist',
       chunkSizeWarningLimit: 2000,
       minify: 'terser',
@@ -147,6 +147,9 @@ export default ({ mode }) => {
     ],
     // 预加载项目必需的组件
     optimizeDeps: {
+      esbuildOptions: {
+        target: 'es2020'
+      },
       include: [
         'vue',
         'vue-router',
