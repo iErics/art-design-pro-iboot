@@ -94,12 +94,12 @@ export default ({ mode }) => {
         }
       }),
       // 打包分析
-      // visualizer({
-      //   open: true,
-      //   gzipSize: true,
-      //   brotliSize: true,
-      //   filename: 'dist/stats.html' // 分析图生成的文件名及路径
-      // }),
+      visualizer({
+        open: true,
+        gzipSize: true,
+        brotliSize: true,
+        filename: 'dist/stats.html' // 分析图生成的文件名及路径
+      }),
       // 压缩
       viteCompression({
         verbose: true, // 是否在控制台输出压缩结果
