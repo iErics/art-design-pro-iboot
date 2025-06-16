@@ -4,7 +4,7 @@ const asciiArt = `
 \x1b[0m
 \x1b[36m💡 如果您觉得项目对您有帮助，请点击下面的链接为我点个 ★Star 支持一下！祝您使用愉快！
 \x1b[0m
-\x1b[33m🌟 GitHub: https://github.com/Daymychen/art-design-pro
+\x1b[33m🌟 GitHub: https://github.com/anganing/art-design-pro-java
 \x1b[0m
 \x1b[31m✨ 技术支持（QQ群）: 821834289，如果你有任何问题，请加入QQ群，我们会在第一时间为你解答！
 \x1b[0m
