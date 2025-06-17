@@ -6,7 +6,7 @@ export const WEB_LINKS = {
   GITHUB: 'https://github.com/anganing/art-design-pro-java',
 
   // 个人博客
-  BLOG: 'http://www.blog.iboot.top',
+  BLOG: 'http:/blog.iboot.top',
 
   // 项目文档
   DOCS: 'https://github.com/anganing/art-design-pro-java',
